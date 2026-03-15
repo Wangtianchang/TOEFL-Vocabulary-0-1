@@ -31,17 +31,12 @@
         </div>
     </div>
 
+<script src="data.js"></script>
+    
     <script>
-        // 这里是词库数据
-        const words = [
-            {w: "abandon", p: "/əˈbændən/", d: "v. 放弃，抛弃", e: "The captain gave the order to abandon ship."},
-            {w: "ability", p: "/əˈbɪləti/", d: "n. 能力，才干", e: "He has the ability to do the job."},
-            {w: "abroad", p: "/əˈbrɔːd/", d: "adv. 在国外，到海外", e: "She often goes abroad on business."},
-            {w: "absence", p: "/ˈæbsəns/", d: "n. 缺席，不在", e: "The decision was made in my absence."},
-            {w: "absolute", p: "/ˈæbsəluːt/", d: "adj. 绝对的，完全的", e: "You must tell the absolute truth."}
-            // 后续我会为你生成完整的3500词数据包
-        ];
-
+        // 把原本固定的 words 数组删掉，直接使用 data.js 里的 wordList
+        const words = typeof wordList !== 'undefined' ? wordList : [{w: "Error", p: "", d: "词库未加载", e: ""}];
+        
         let currentIndex = 0;
 
         function updateUI() {
@@ -50,8 +45,6 @@
             document.getElementById('phoneticDisplay').innerText = current.p;
             document.getElementById('defDisplay').innerText = current.d;
             document.getElementById('exDisplay').innerText = "Context: " + current.e;
-            
-            // 重置显示状态
             document.getElementById('defDisplay').style.display = 'none';
             document.getElementById('exDisplay').style.display = 'none';
         }
@@ -65,7 +58,7 @@
         }
 
         function nextWord() {
-            currentIndex = (currentIndex + 1) % words.length;
+            currentIndex = Math.floor(Math.random() * words.length); // 随机练习
             updateUI();
         }
 
@@ -75,7 +68,6 @@
             window.speechSynthesis.speak(msg);
         }
 
-        // 初始化
         updateUI();
     </script>
 </body>
