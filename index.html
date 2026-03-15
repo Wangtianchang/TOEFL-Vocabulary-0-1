@@ -33,12 +33,21 @@
             document.getElementById('w').innerText = words[i].w;
             document.getElementById('d').innerText = words[i].d;
         }
-        function playVoice() {
-            const msg = new SpeechSynthesisUtterance(document.getElementById('w').innerText);
-            msg.lang = 'en-US';
-            msg.rate = 0.8;
-            window.speechSynthesis.speak(msg);
-        }
+function playVoice() {
+    const word = document.getElementById('w').innerText;
+    // 使用微软 Azure 语音服务的高清接口，发音极其逼真
+    const audioUrl = `https://tts.azure.cn/speech/synthesize?text=${encodeURIComponent(word)}&lang=en-US&voice=en-US-JennyNeural`;
+    
+    // 如果浏览器阻止自动播放，点击按钮后会强制触发
+    const audio = new Audio(audioUrl);
+    audio.play().catch(e => {
+        // 备用兜底方案，防止报错
+        const msg = new SpeechSynthesisUtterance(word);
+        msg.lang = 'en-US';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    });
+}
         nextWord();
     </script>
 </body>
