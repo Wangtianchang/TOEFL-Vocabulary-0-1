@@ -16,7 +16,27 @@
         <div class="word" id="w">Loading...</div>
         <div class="def" id="d">正在载入数据...</div>
         <button onclick="nextWord()">下一个单词</button>
-        <button onclick="playVoice()" style="background:#333; color:#fff;">听发音</button>
+        <button onclick=function playVoice() {
+    const word = document.getElementById('w').innerText;
+    if (!word || word === "Loading...") return;
+
+    // 使用 Google 翻译的 TTS 接口，发音标准，兼容性极高
+    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(word)}`;
+    
+    const audio = new Audio(audioUrl);
+    
+    // 强制播放
+    audio.play().then(() => {
+        console.log("发音成功");
+    }).catch(e => {
+        console.error("发音失败，使用本地语音兜底", e);
+        // 如果网络阻断，切换回系统自带的语音引擎
+        const msg = new SpeechSynthesisUtterance(word);
+        msg.lang = 'en-US';
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+    });
+}
     </div>
 <script>
     let words = [];
