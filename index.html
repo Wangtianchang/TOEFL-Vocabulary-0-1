@@ -61,31 +61,20 @@
             currentIndex = Math.floor(Math.random() * words.length); // 随机练习
             updateUI();
         }
-
 function speak() {
-    const msg = new SpeechSynthesisUtterance(words[currentIndex].w);
+    const currentWord = words[currentIndex].w;
+    // 使用谷歌高清美音接口，这个发音非常有力、准确，像真人老师
+    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentWord)}&tl=en&total=1&idx=0&textlen=${currentWord.length}&client=tw-ob&prev=input`;
     
-    // 获取系统支持的所有语音包
-    const voices = window.speechSynthesis.getVoices();
-    
-    // 优先级排序：尝试寻找 Google US English, Apple Samantha, 或 Microsoft Aria 等清晰美音
-    const preferredVoice = voices.find(v => 
-        v.name.includes('Google US English') || 
-        v.name.includes('Samantha') || 
-        v.name.includes('Aria') || 
-        v.lang === 'en-US'
-    );
-
-    if (preferredVoice) msg.voice = preferredVoice;
-
-    msg.lang = 'en-US';
-    msg.rate = 0.85;  // 稍微降低一点语速，让发音更有颗粒感、更清晰
-    msg.pitch = 1.0;  // 保持标准音高
-    msg.volume = 1.0; // 满格音量输出
-
-    window.speechSynthesis.cancel(); // 强制停止当前正在播的声音，防止重叠
-    window.speechSynthesis.speak(msg);
-        }
+    const audio = new Audio(audioUrl);
+    audio.play().catch(e => {
+        // 如果谷歌接口偶尔抽风，备用方案：回到本地发音但调优参数
+        const msg = new SpeechSynthesisUtterance(currentWord);
+        msg.lang = 'en-US';
+        msg.rate = 0.8;
+        window.speechSynthesis.speak(msg);
+    });
+}
 
         updateUI();
     </script>
