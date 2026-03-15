@@ -4,7 +4,24 @@
     <meta charset="UTF-8">
     <title>学术词汇内化系统</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+     <div id="card">
+    <div class="word" id="w"></div>
+    <div class="def" id="d"></div>
+    <button onclick="nextWord()">下一个 (Next)</button>
+    <button onclick="playVoice()" style="background:#333; color:#fff; margin-top:10px;">听发音</button>
+</div>
+
+<script>
+    let currentIdx = 0;
+    function nextWord() {
+        currentIdx = (currentIdx + 1) % words.length;
+        document.getElementById('w').innerText = words[currentIdx].w;
+        document.getElementById('d').innerText = words[currentIdx].d;
+    }
+    // 初始化第一个
+    nextWord();
+    // 你的 playVoice 函数保持不变...
+</script>
         #card { border: 1px solid #333; padding: 40px; border-radius: 15px; width: 80%; max-width: 400px; text-align: center; }
         .word { font-size: 3rem; margin-bottom: 10px; }
         .def { color: #0070f3; margin-bottom: 20px; }
@@ -19,7 +36,20 @@
     </div>
     <script>
         function playVoice() {
-            const word = document.getElementById('w').innerText;
+const words = [
+    {w: "abandon", p: "/əˈbændən/", d: "v. 抛弃，舍弃，放弃", e: "The captain abandoned the ship."},
+    {w: "ability", p: "/əˈbɪlɪtɪ/", d: "n. 能力；才能", e: "He has the ability to succeed."},
+    {w: "able", p: "/ˈeɪb(ə)l/", d: "a. 能够；有能力的", e: "She is able to speak three languages."},
+    {w: "abnormal", p: "/æbˈnɔːm(ə)l/", d: "a. 反常的，变态的", e: "The test results are abnormal."},
+    {w: "aboard", p: "/əˈbɔːd/", d: "prep. 上（船，飞机等）", e: "Welcome aboard!"},
+    {w: "abolish", p: "/əˈbɔlɪʃ/", d: "v. 废除，废止", e: "The system was abolished."},
+    {w: "about", p: "/əˈbaʊt/", d: "ad. 大约 prep. 关于", e: "What are you talking about?"},
+    {w: "above", p: "/əˈbʌv/", d: "prep. 在……上面", e: "The plane is flying above the clouds."},
+    {w: "abroad", p: "/əˈbrɔːd/", d: "ad. 到国外", e: "She often goes abroad."},
+    {w: "absent", p: "/ˈæbsənt/", d: "a. 缺席的", e: "He was absent from school."},
+    {w: "absolute", p: "/ˈæbsəluːt/", d: "a. 绝对的", e: "This is the absolute truth."},
+    {w: "absorb", p: "/əbˈsɔːb/", d: "v. 吸收", e: "Plants absorb carbon dioxide."}
+];
             const msg = new SpeechSynthesisUtterance(word);
             msg.lang = 'en-US';
             msg.rate = 0.8;
