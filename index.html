@@ -1,57 +1,51 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <script src="words.js"></script>
     <meta charset="UTF-8">
-    <title>托福词汇内化系统</title>
+    <title>托福自适应词汇引擎</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #card { border: 1px solid #333; padding: 40px; border-radius: 15px; width: 80%; max-width: 400px; text-align: center; }
-        .word { font-size: 2.5rem; color: #fff; margin-bottom: 10px; }
-        .def { color: #0070f3; font-size: 1.2rem; margin-bottom: 20px; }
-        button { padding: 15px 30px; background: #fff; color: #000; border: none; cursor: pointer; border-radius: 5px; font-weight: bold; width: 100%; margin-top: 10px; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: 'Segoe UI', sans-serif; }
+        #app { width: 90%; max-width: 400px; text-align: center; }
+        .word { font-size: 3rem; margin-bottom: 10px; }
+        .def { color: #0070f3; font-size: 1.2rem; margin-bottom: 30px; }
+        button { width: 100%; padding: 15px; background: #222; color: #fff; border: 1px solid #444; border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div id="card">
+    <div id="app">
         <div class="word" id="w">Loading...</div>
-        <div class="def" id="d">正在载入数据...</div>
+        <div class="def" id="d">正在载入系统...</div>
         <button onclick="nextWord()">下一个单词</button>
-        <button onclick=function playVoice() {
-    const word = document.getElementById('w').innerText;
-    if (!word || word === "Loading...") return;
-
-    // 创建一个音频对象，指向标准的在线发音库
-    // 使用有道词典的真人发音接口，这是目前最稳定且无需 API Key 的方案
-    const audio = new Audio(`https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(word)}&type=2`);
-    
-    // 执行播放
-    audio.play().catch(e => {
-        console.log("播放被拦截，正在尝试备用方案...");
-        const msg = new SpeechSynthesisUtterance(word);
-        msg.lang = 'en-US';
-        window.speechSynthesis.speak(msg);
-    });
-}
-}
+        <button onclick="playVoice()" style="background:#0070f3; border:none;">听标准美音</button>
     </div>
-<script>
-    let words = [];
-    // 自动读取你上传的 words.json
-    fetch('words.json')
-        .then(res => res.json())
-        .then(data => {
-            words = data;
-            nextWord();
-        });
 
-    let i = 0;
-    function nextWord() {
-        i = (i + 1) % words.length;
-        document.getElementById('w').innerText = words[i].w;
-        document.getElementById('d').innerText = words[i].d;
-    }
-    // ...其余函数不变
-</script>
+    <script>
+        // 内置安全数据（先放入少量测试，确保运行，随后我们通过数据表导入）
+        const words = [
+            {w: "Abandon", d: "v. 放弃，抛弃"},
+            {w: "Ability", d: "n. 能力，才能"},
+            {w: "Academic", d: "a. 学术的"}
+        ];
+
+        let i = 0;
+        function nextWord() {
+            i = (i + 1) % words.length;
+            document.getElementById('w').innerText = words[i].w;
+            document.getElementById('d').innerText = words[i].d;
+        }
+
+        function playVoice() {
+            const word = document.getElementById('w').innerText;
+            // 采用 SpeechSynthesis 降级方案，这是浏览器自带最稳的
+            // 只要这一步能出声，后续我们再通过音频标签替换
+            const msg = new SpeechSynthesisUtterance(word);
+            msg.lang = 'en-US';
+            msg.rate = 0.9;
+            window.speechSynthesis.speak(msg);
+        }
+        
+        // 自动初始化
+        nextWord();
+    </script>
 </body>
 </html>
