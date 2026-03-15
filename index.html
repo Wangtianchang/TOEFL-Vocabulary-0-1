@@ -20,33 +20,36 @@
         <button id="speakBtn" onclick="playVoice()" style="background:#0070f3; border:none;">听标准美音</button>
     </div>
 
-    <script>
-        // 词库数据
-        const words = [
-            {w: "Abandon", d: "v. 放弃，抛弃"},
-            {w: "Ability", d: "n. 能力，才能"},
-            {w: "Academic", d: "a. 学术的"}
-        ];
+<script>
+    // 在页面加载后，提前加载好语音包
+    let voices = [];
+    window.speechSynthesis.onvoiceschanged = () => {
+        voices = window.speechSynthesis.getVoices();
+    };
 
-        let i = 0;
-        function nextWord() {
-            i = (i + 1) % words.length;
-            document.getElementById('w').innerText = words[i].w;
-            document.getElementById('d').innerText = words[i].d;
-        }
+    function playVoice() {
+        const word = document.getElementById('w').innerText;
+        const msg = new SpeechSynthesisUtterance(word);
+        
+        // 核心逻辑：强制查找“最像真人”的高级音库
+        // 晓晓(Xiaoxiao)和云希(Yunxi)是目前业界公认的最佳发音
+        const preferredVoice = voices.find(v => 
+            v.name.includes('Microsoft Xiaoxiao') || 
+            v.name.includes('Microsoft Yunxi') || 
+            v.name.includes('Google US English')
+        );
 
-        function playVoice() {
-            const word = document.getElementById('w').innerText;
-            // 采用更稳妥的调用方式
-            const msg = new SpeechSynthesisUtterance(word);
-            msg.lang = 'en-US';
-            msg.rate = 0.9;
-            window.speechSynthesis.cancel(); // 强行清除队列
-            window.speechSynthesis.speak(msg);
+        if (preferredVoice) {
+            msg.voice = preferredVoice;
         }
         
-        // 自动触发一次初始化
-        nextWord();
-    </script>
+        msg.lang = 'en-US';
+        msg.rate = 0.9; // 稍微放慢，更有学术气息
+        msg.pitch = 1.0;
+        
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(msg);
+    }
+</script>
 </body>
 </html>
