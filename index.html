@@ -21,6 +21,28 @@
     </div>
 
 <script>
+    <script src="data.js"></script>
+
+<script>
+    // 这里使用 wordList 变量，确保变量名与 data.js 里一致
+    const words = typeof wordList !== 'undefined' ? wordList : [{w: "Error", d: "数据未加载"}];
+    
+    // 确保 i 不会越界
+    let i = 0;
+    
+    function nextWord() {
+        // 动态循环
+        i = (i + 1) % words.length;
+        document.getElementById('w').innerText = words[i].w;
+        document.getElementById('d').innerText = words[i].d;
+    }
+    
+    // 初始化显示第一个词
+    if (words.length > 0) {
+        document.getElementById('w').innerText = words[0].w;
+        document.getElementById('d').innerText = words[0].d;
+    }
+</script>
     // 在页面加载后，提前加载好语音包
     let voices = [];
     window.speechSynthesis.onvoiceschanged = () => {
