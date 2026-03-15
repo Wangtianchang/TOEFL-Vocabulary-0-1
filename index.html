@@ -4,74 +4,49 @@
     <meta charset="UTF-8">
     <title>托福词汇自适应引擎</title>
     <style>
-        body { background: #000; color: #fff; font-family: 'Helvetica Neue', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #app { width: 90%; max-width: 450px; text-align: center; }
-        .word { font-size: 3rem; color: #fff; margin-bottom: 5px; }
-        .def { color: #0070f3; font-size: 1.3rem; margin-bottom: 30px; }
-        button { width: 100%; padding: 18px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 12px; cursor: pointer; font-size: 1rem; margin-bottom: 10px; transition: 0.2s; }
-        button:hover { background: #333; }
+        body { background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; font-family: sans-serif; }
+        #app { width: 90%; max-width: 400px; text-align: center; }
+        .word { font-size: 3rem; margin-bottom: 10px; }
+        .def { color: #0070f3; font-size: 1.2rem; margin-bottom: 30px; }
+        button { width: 100%; padding: 15px; background: #222; border: 1px solid #444; color: #fff; border-radius: 8px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="word" id="w">Ready</div>
-        <div class="def" id="d">点击下方开始学习</div>
+        <div class="word" id="w">Loading...</div>
+        <div class="def" id="d">请稍候...</div>
         <button onclick="nextWord()">下一个单词</button>
-        <button id="speakBtn" onclick="playVoice()" style="background:#0070f3; border:none;">听标准美音</button>
+        <button onclick="playVoice()" style="background:#0070f3;">听标准美音</button>
     </div>
 
-<script>
-    <script src="data.js"></script>
+    <script>
+        // 【关键点】：把你的词库在这里统一填入，格式必须严格遵守
+        const words = [
+            {w: "Abandon", d: "v. 放弃，抛弃"},
+            {w: "Ability", d: "n. 能力，才能"},
+            {w: "Academic", d: "a. 学术的"}
+            // ...直接在这里追加你的 3500 个词
+        ];
 
-<script>
-    // 这里使用 wordList 变量，确保变量名与 data.js 里一致
-    const words = typeof wordList !== 'undefined' ? wordList : [{w: "Error", d: "数据未加载"}];
-    
-    // 确保 i 不会越界
-    let i = 0;
-    
-    function nextWord() {
-        // 动态循环
-        i = (i + 1) % words.length;
-        document.getElementById('w').innerText = words[i].w;
-        document.getElementById('d').innerText = words[i].d;
-    }
-    
-    // 初始化显示第一个词
-    if (words.length > 0) {
-        document.getElementById('w').innerText = words[0].w;
-        document.getElementById('d').innerText = words[0].d;
-    }
-</script>
-    // 在页面加载后，提前加载好语音包
-    let voices = [];
-    window.speechSynthesis.onvoiceschanged = () => {
-        voices = window.speechSynthesis.getVoices();
-    };
-
-    function playVoice() {
-        const word = document.getElementById('w').innerText;
-        const msg = new SpeechSynthesisUtterance(word);
-        
-        // 核心逻辑：强制查找“最像真人”的高级音库
-        // 晓晓(Xiaoxiao)和云希(Yunxi)是目前业界公认的最佳发音
-        const preferredVoice = voices.find(v => 
-            v.name.includes('Microsoft Xiaoxiao') || 
-            v.name.includes('Microsoft Yunxi') || 
-            v.name.includes('Google US English')
-        );
-
-        if (preferredVoice) {
-            msg.voice = preferredVoice;
+        let i = 0;
+        function nextWord() {
+            i = (i + 1) % words.length;
+            document.getElementById('w').innerText = words[i].w;
+            document.getElementById('d').innerText = words[i].d;
         }
-        
-        msg.lang = 'en-US';
-        msg.rate = 0.9; // 稍微放慢，更有学术气息
-        msg.pitch = 1.0;
-        
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(msg);
-    }
-</script>
+
+        function playVoice() {
+            const word = document.getElementById('w').innerText;
+            const msg = new SpeechSynthesisUtterance(word);
+            msg.lang = 'en-US';
+            msg.rate = 0.9;
+            // 兜底方案：如果不指定特定发音人，则自动使用系统默认的最高质量美音
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(msg);
+        }
+
+        // 初始化
+        nextWord();
+    </script>
 </body>
 </html>
