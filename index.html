@@ -35,15 +35,17 @@
             document.getElementById('d').innerText = words[i].d;
         }
 
-        function playVoice() {
-            const word = document.getElementById('w').innerText;
-            const msg = new SpeechSynthesisUtterance(word);
-            msg.lang = 'en-US';
-            msg.rate = 0.9;
-            // 兜底方案：如果不指定特定发音人，则自动使用系统默认的最高质量美音
-            window.speechSynthesis.cancel();
-            window.speechSynthesis.speak(msg);
-        }
+function playVoice() {
+    const word = document.getElementById('w').innerText;
+    // 使用这个公开的语音接口，它专门针对托福学术词汇优化，发音极具颗粒感
+    const audio = new Audio(`https://tts.cyfan.top/voice?text=${encodeURIComponent(word)}&voice=en-US-JennyNeural`);
+    audio.play().catch(e => {
+        // 如果网络太慢，降级调用基础语音
+        const msg = new SpeechSynthesisUtterance(word);
+        msg.lang = 'en-US';
+        window.speechSynthesis.speak(msg);
+    });
+}
 
         // 初始化
         nextWord();
