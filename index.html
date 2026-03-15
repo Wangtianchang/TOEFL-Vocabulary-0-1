@@ -2,19 +2,81 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Academic Elite | 词汇引擎</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Elite | 托福词汇内化系统</title>
     <style>
-        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        #card { border: 1px solid #333; padding: 50px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { font-size: 2em; color: #fff; }
-        .btn { margin-top: 30px; padding: 12px 24px; background: #0070f3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        body { background: #0a0a0a; color: #e0e0e0; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        #card { border: 1px solid #333; padding: 40px; border-radius: 20px; width: 90%; max-width: 450px; text-align: center; background: #111; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
+        .word-text { font-size: 3.5rem; font-weight: 700; color: #fff; margin-bottom: 10px; cursor: pointer; }
+        .phonetic { color: #888; margin-bottom: 20px; font-style: italic; }
+        .definition { font-size: 1.2rem; color: #0070f3; margin-bottom: 25px; display: none; }
+        .example { font-size: 0.95rem; color: #aaa; line-height: 1.6; border-left: 3px solid #0070f3; padding-left: 15px; text-align: left; margin-top: 20px; display: none; }
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 30px; }
+        button { padding: 12px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-primary { background: #0070f3; color: white; }
+        .btn-secondary { background: #222; color: #888; border: 1px solid #333; }
+        button:hover { opacity: 0.8; transform: translateY(-2px); }
     </style>
 </head>
 <body>
     <div id="card">
-        <h1 id="word">Academic</h1>
-        <p id="def">学术的</p>
-        <button class="btn" onclick="alert('即将接入你的3500词库')">Next Word</button>
+        <div class="word-text" id="wordDisplay" onclick="speak()">Loading...</div>
+        <div class="phonetic" id="phoneticDisplay">点击单词发音</div>
+        <div class="definition" id="defDisplay"></div>
+        <div class="example" id="exDisplay"></div>
+        
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="toggleDetails()">显示/隐藏详情</button>
+            <button class="btn-primary" onclick="nextWord()">下一个 (Next)</button>
+        </div>
     </div>
+
+    <script>
+        // 这里是词库数据
+        const words = [
+            {w: "abandon", p: "/əˈbændən/", d: "v. 放弃，抛弃", e: "The captain gave the order to abandon ship."},
+            {w: "ability", p: "/əˈbɪləti/", d: "n. 能力，才干", e: "He has the ability to do the job."},
+            {w: "abroad", p: "/əˈbrɔːd/", d: "adv. 在国外，到海外", e: "She often goes abroad on business."},
+            {w: "absence", p: "/ˈæbsəns/", d: "n. 缺席，不在", e: "The decision was made in my absence."},
+            {w: "absolute", p: "/ˈæbsəluːt/", d: "adj. 绝对的，完全的", e: "You must tell the absolute truth."}
+            // 后续我会为你生成完整的3500词数据包
+        ];
+
+        let currentIndex = 0;
+
+        function updateUI() {
+            const current = words[currentIndex];
+            document.getElementById('wordDisplay').innerText = current.w;
+            document.getElementById('phoneticDisplay').innerText = current.p;
+            document.getElementById('defDisplay').innerText = current.d;
+            document.getElementById('exDisplay').innerText = "Context: " + current.e;
+            
+            // 重置显示状态
+            document.getElementById('defDisplay').style.display = 'none';
+            document.getElementById('exDisplay').style.display = 'none';
+        }
+
+        function toggleDetails() {
+            const d = document.getElementById('defDisplay');
+            const e = document.getElementById('exDisplay');
+            const isHidden = d.style.display === 'none';
+            d.style.display = isHidden ? 'block' : 'none';
+            e.style.display = isHidden ? 'block' : 'none';
+        }
+
+        function nextWord() {
+            currentIndex = (currentIndex + 1) % words.length;
+            updateUI();
+        }
+
+        function speak() {
+            const msg = new SpeechSynthesisUtterance(words[currentIndex].w);
+            msg.lang = 'en-US';
+            window.speechSynthesis.speak(msg);
+        }
+
+        // 初始化
+        updateUI();
+    </script>
 </body>
 </html>
