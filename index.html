@@ -62,10 +62,29 @@
             updateUI();
         }
 
-        function speak() {
-            const msg = new SpeechSynthesisUtterance(words[currentIndex].w);
-            msg.lang = 'en-US';
-            window.speechSynthesis.speak(msg);
+function speak() {
+    const msg = new SpeechSynthesisUtterance(words[currentIndex].w);
+    
+    // 获取系统支持的所有语音包
+    const voices = window.speechSynthesis.getVoices();
+    
+    // 优先级排序：尝试寻找 Google US English, Apple Samantha, 或 Microsoft Aria 等清晰美音
+    const preferredVoice = voices.find(v => 
+        v.name.includes('Google US English') || 
+        v.name.includes('Samantha') || 
+        v.name.includes('Aria') || 
+        v.lang === 'en-US'
+    );
+
+    if (preferredVoice) msg.voice = preferredVoice;
+
+    msg.lang = 'en-US';
+    msg.rate = 0.85;  // 稍微降低一点语速，让发音更有颗粒感、更清晰
+    msg.pitch = 1.0;  // 保持标准音高
+    msg.volume = 1.0; // 满格音量输出
+
+    window.speechSynthesis.cancel(); // 强制停止当前正在播的声音，防止重叠
+    window.speechSynthesis.speak(msg);
         }
 
         updateUI();
