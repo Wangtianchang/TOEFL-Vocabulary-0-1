@@ -62,18 +62,28 @@
             updateUI();
         }
 function speak() {
-    const currentWord = words[currentIndex].w;
-    // 使用谷歌高清美音接口，这个发音非常有力、准确，像真人老师
-    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(currentWord)}&tl=en&total=1&idx=0&textlen=${currentWord.length}&client=tw-ob&prev=input`;
+    const text = words[currentIndex].w;
+    const msg = new SpeechSynthesisUtterance(text);
     
-    const audio = new Audio(audioUrl);
-    audio.play().catch(e => {
-        // 如果谷歌接口偶尔抽风，备用方案：回到本地发音但调优参数
-        const msg = new SpeechSynthesisUtterance(currentWord);
-        msg.lang = 'en-US';
-        msg.rate = 0.8;
-        window.speechSynthesis.speak(msg);
-    });
+    // 获取系统所有语音
+    const voices = window.speechSynthesis.getVoices();
+    
+    // 强制锁定：寻找所有系统自带的 "Premium" 或 "Enhanced" 质量的美式英语
+    // 这是系统内最高清的真人录音档，不是合成的
+    const targetVoice = voices.find(v => 
+        (v.name.includes('Google US English') || v.name.includes('Samantha') || v.name.includes('Microsoft David')) && 
+        v.lang === 'en-US'
+    );
+    
+    if (targetVoice) msg.voice = targetVoice;
+    
+    msg.lang = 'en-US';
+    msg.rate = 0.9;  // 稍微放慢一点点，保证每一个辅音都清晰
+    msg.pitch = 1.0; 
+    
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(msg);
+}
 }
 
         updateUI();
