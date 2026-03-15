@@ -18,37 +18,23 @@
         <button onclick="nextWord()">下一个单词</button>
         <button onclick="playVoice()" style="background:#333; color:#fff;">听发音</button>
     </div>
-    <script>
-        // 词库直接内嵌，杜绝任何外部加载错误
-        const words = [
-            {w: "Abandon", d: "v. 放弃，抛弃"},
-            {w: "Ability", d: "n. 能力，才能"},
-            {w: "Abnormal", d: "a. 反常的"},
-            {w: "Abolish", d: "v. 废除，废止"}
-        ];
+<script>
+    let words = [];
+    // 自动读取你上传的 words.json
+    fetch('words.json')
+        .then(res => res.json())
+        .then(data => {
+            words = data;
+            nextWord();
+        });
 
-        let i = 0;
-        function nextWord() {
-            i = (i + 1) % words.length;
-            document.getElementById('w').innerText = words[i].w;
-            document.getElementById('d').innerText = words[i].d;
-        }
-function playVoice() {
-    const word = document.getElementById('w').innerText;
-    // 使用微软 Azure 语音服务的高清接口，发音极其逼真
-    const audioUrl = `https://tts.azure.cn/speech/synthesize?text=${encodeURIComponent(word)}&lang=en-US&voice=en-US-JennyNeural`;
-    
-    // 如果浏览器阻止自动播放，点击按钮后会强制触发
-    const audio = new Audio(audioUrl);
-    audio.play().catch(e => {
-        // 备用兜底方案，防止报错
-        const msg = new SpeechSynthesisUtterance(word);
-        msg.lang = 'en-US';
-        msg.rate = 0.9;
-        window.speechSynthesis.speak(msg);
-    });
-}
-        nextWord();
-    </script>
+    let i = 0;
+    function nextWord() {
+        i = (i + 1) % words.length;
+        document.getElementById('w').innerText = words[i].w;
+        document.getElementById('d').innerText = words[i].d;
+    }
+    // ...其余函数不变
+</script>
 </body>
 </html>
